@@ -14,6 +14,30 @@ return {
   },
 
   {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function ()
+      require("copilot").setup({
+        suggestion = {
+          enabled = true,
+          auto_trigger = true,
+          debounce = 75,
+          keymap = {
+            accept = "<M-l>",
+            accept_word = false,
+            accept_line = false,
+            next = "<M-]>",
+            prev = "<M-[",
+            dismiss = "<C-j>",
+          }
+        },
+        panel = {enable = true},
+      })
+    end,
+  },
+
+  {
     'anurag3301/nvim-platformio.lua',
 
     -- optional: cond used to enable/disable platformio
@@ -79,6 +103,35 @@ return {
     ---@type render.md.UserConfig
     opts = {},
     lazy = false,
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+    ft = { "c", "cpp" },
+    config = function()
+      require "configs.dap-esp32"
+    end,
+  },
+
+  {
+    "mfussenegger/nvim-dap-python",
+    ft = "python",
+    dependencies = "mfussenegger/nvim-dap",
+    config = function()
+      require "configs.dap"
+    end,
+  },
+
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    config = function()
+      require "configs.dapui"
+    end,
   },
 
   -- test new blink

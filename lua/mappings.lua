@@ -99,6 +99,61 @@ map({ "n", "t" }, "<A-i>", function()
   require("nvchad.term").toggle { pos = "float", id = "floatTerm" }
 end, { desc = "terminal toggle floating term" })
 
+-- dap
+map("n", "<C-b>", function()
+  require("dap").toggle_breakpoint()
+end, { desc = "dap toggle breakpoint" })
+
+map("n", "<F5>", function()
+  local dap = require "dap"
+  require "dapui" -- force-load so its event_initialized listener is registered before we launch
+  if not dap.session() and vim.bo.filetype == "python" then
+    for _, config in ipairs(dap.configurations.python or {}) do
+      if config.name == "file" then
+        dap.run(config)
+        return
+      end
+    end
+  end
+  dap.continue()
+end, { desc = "dap launch file / continue" })
+
+map("n", "<F10>", function()
+  require("dap").step_over()
+end, { desc = "dap step over" })
+
+map("n", "<F11>", function()
+  require("dap").step_into()
+end, { desc = "dap step into" })
+
+map("n", "<S-F11>", function()
+  require("dap").step_out()
+end, { desc = "dap step out" })
+
+map("n", "<leader>du", function()
+  require("dapui").toggle()
+end, { desc = "dap toggle ui" })
+
+-- ESP32: plain interactive gdb+openocd session in a terminal split, bypassing
+-- nvim-dap/cpptools (whose DAP bridge is unreliable for breakpoints on this
+-- FreeRTOS/Xtensa remote-debug target - see configs/dap-esp32.lua).
+-- Opens a plain toggleterm shell and *sends* the script as typed input
+-- rather than passing it as a `cmd`: both nvchad.term and toggleterm build a
+-- `cmd` launch through `&shell &shellcmdflag ...`, and this config sets
+-- `&shellcmdflag = '-s'` (zsh: read commands from stdin), which silently
+-- ignores a passed command and just opens a plain interactive shell instead.
+map("n", "<leader>de", function()
+  local Terminal = require("toggleterm.terminal").Terminal
+  local esp32_gdb = Terminal:new {
+    direction = "horizontal",
+    close_on_exit = false,
+    on_open = function(term)
+      term:send(vim.fn.stdpath "config" .. "/lua/configs/esp32-gdb-session.sh")
+    end,
+  }
+  esp32_gdb:toggle()
+end, { desc = "esp32 gdb+openocd terminal session" })
+
 -- whichkey
 map("n", "<leader>wK", "<cmd>WhichKey <CR>", { desc = "whichkey all keymaps" })
 

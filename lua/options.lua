@@ -4,6 +4,7 @@ require "nvchad.options"
 
 local o = vim.o
 o.cursorlineopt = 'both' -- to enable cursorline!
+o.exrc = true            -- source .nvim.lua from project directories
 
 o.relativenumber = true
 
